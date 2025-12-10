@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Навчальний файл HTML</title>
+</head>
+<body>
+<div class="main">
+    <div class="row textStyle">
+        <div class="text user">User</div>
+        <button class="button">Generate</button>
+    </div>
+    <div class="row textStyle">
+        <div class = "box">
+        <div class = "rowCasino">
+            <div class = "icon"></div>
+            <div class = "icon"></div>
+            <div class = "icon"></div>
+        </div>
+        <div class = "rowCasino">
+            <div class = "icon"></div>
+            <div class = "icon"></div>
+            <div class = "icon"></div>
+        </div>
+        <div class = "rowCasino">
+            <div class = "icon"></div>
+            <div class = "icon"></div>
+            <div class = "icon"></div>
+        </div>
+        </div>
+    </div>
+</div>
+<style>
+    body {
+    font-family: Arial, sans-serif;
+    background-image: url(../websites/logos/mount.jpeg);
+    background-size: cover; 
+    background-position: center; 
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.main {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+   
+}
+.textStyle {
+    margin-bottom: 20px;
+    text-align: center;
+}
+.user {
+    font-size: 20px;
+    font-weight: bold;
+}
+.button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+.box {
+    display: flex;
+    gap: 10px;
+}
+.rowCasino {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.icon {
+    width: 100px;
+    height: 100px;
+    background: #ccc;
+    border: 1px solid #bbb;
+    border-radius: 5px;
+}
+
+</style>
+<script>document.addEventListener("DOMContentLoaded", () => {
+    const images = ["apple.png", "casino.png", "cherries.png", "lemon.png", "watermelon.png"];
+    let userName = prompt("Введіть ваше ім'я:") || "User";
+    let winCounter = 0;
+    document.querySelector(".user").textContent = userName;
+    const generateButton = document.querySelector(".button");
+    const rows = document.querySelectorAll(".rowCasino");
+    const generateIcons = () => {
+        rows.forEach(row => {
+            const icons = row.querySelectorAll(".icon");
+            const usedImages = new Set();
+  
+            icons.forEach(icon => {
+                let randomImage;
+                do {
+                    randomImage = images[Math.floor(Math.random() * images.length)];
+                } while (usedImages.has(randomImage)); // Переконатися, що вертикально не повторюється
+                usedImages.add(randomImage);
+  
+                icon.style.backgroundImage = `url('img/${randomImage}')`;
+                icon.style.backgroundSize = "cover";
+            });
+        });
+    };
+    const checkForWin = () => {
+        const middleIcons = Array.from(rows).map(row => 
+            row.querySelectorAll(".icon")[1].style.backgroundImage
+        );
+        if (middleIcons.every(icon => icon === middleIcons[0])) {
+            winCounter++;
+            setTimeout(function() {
+              alert(`Вітаємо, ${userName}! Ви виграли! Загальні перемоги: ${winCounter}`)}, 300);
+        }
+    };
+    generateButton.addEventListener("click", () => {
+        generateIcons();
+        checkForWin();
+    });
+  });
+  </script>
+</body>
+</html>
