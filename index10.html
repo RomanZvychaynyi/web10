@@ -1,0 +1,467 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Однорукий бандит</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(145deg, #1f1c2c, #928dab); /* более современный градиент */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #f0f0f0;
+        }
+        
+        .container {
+            background: rgba(30, 30, 30, 0.95); /* тёмная полупрозрачная панель */
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            max-width: 850px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #ffeaa7;
+            margin-bottom: 30px;
+            font-size: 2.8em;
+            text-shadow: 2px 2px 10px rgba(255,255,255,0.3);
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #6a11cb, #2575fc); /* новый яркий градиент */
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        
+        .player-info {
+            text-align: left;
+        }
+        
+        .player-name {
+            font-size: 1.6em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .score {
+            font-size: 1.2em;
+        }
+        
+        .attempt-info {
+            font-size: 1.4em;
+            font-weight: bold;
+            background: rgba(255,255,255,0.15);
+            padding: 12px 25px;
+            border-radius: 30px;
+        }
+        
+        .slot-machine {
+            background: linear-gradient(145deg, #ff6b6b, #f06595); /* яркие слоты */
+            border-radius: 20px;
+            padding: 35px;
+            margin-bottom: 30px;
+            box-shadow: inset 0 0 25px rgba(0,0,0,0.5);
+            border: 4px solid #fff3b0;
+        }
+        
+        .reels {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .reel {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .symbol {
+            width: 90px;
+            height: 90px;
+            background: #2d2d2d; /* тёмная карточка */
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2em;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            border: 3px solid #ffd32a;
+            color: #fff;
+            transition: all 0.4s ease;
+        }
+        
+        .symbol.win {
+            background: #00b894;
+            border-color: #00cec9;
+            transform: scale(1.15);
+            animation: glow 0.6s ease-in-out;
+            color: white;
+        }
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 15px #00cec9; }
+            50% { box-shadow: 0 0 30px #00cec9; }
+        }
+        
+        .result {
+            font-size: 1.6em;
+            font-weight: bold;
+            margin: 25px 0;
+            padding: 18px;
+            border-radius: 15px;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .result.win {
+            background: #00b894;
+            color: #fff;
+            border-color: #00cec9;
+        }
+        
+        .result.lose {
+            background: #d63031;
+            color: #fff;
+            border-color: #e17055;
+        }
+        
+        .controls button {
+            background: linear-gradient(135deg, #6c5ce7, #341f97);
+            color: white;
+            border: none;
+            padding: 16px 45px;
+            font-size: 1.25em;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            font-weight: bold;
+            margin: 0 10px;
+        }
+        
+        .controls button:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 14px 40px rgba(0, 0, 0, 0.4);
+        }
+        
+        .controls button:disabled {
+            background: #636e72;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        
+        .history {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 20px;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+        
+        .history h3 {
+            color: #ffeaa7;
+            margin-bottom: 15px;
+        }
+        
+        .history-item {
+            background: rgba(255,255,255,0.1);
+            margin: 10px 0;
+            padding: 12px 15px;
+            border-radius: 12px;
+            text-align: left;
+            border-left: 5px solid #6c5ce7;
+        }
+        
+        .history-item.win {
+            border-left-color: #00cec9;
+            background: rgba(0,201,201,0.2);
+        }
+        
+        .history-item.lose {
+            border-left-color: #e17055;
+            background: rgba(255,50,50,0.2);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .winner-message {
+            font-size: 2em;
+            font-weight: bold;
+            color: #00cec9;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(0,201,201,0.2);
+            border-radius: 20px;
+            animation: pulse 2s infinite;
+        }
+        </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎰 Однорукий бандит 🎰</h1>
+        
+        <div class="game-info">
+            <div class="player-info">
+                <div class="player-name" id="userName">Гравець</div>
+                <div class="score">Перемоги: <span id="userScore">0</span></div>
+            </div>
+            <div class="attempt-info">
+                Спроба <span id="currentAttempt">1</span> з <span id="maxAttempts">3</span>
+            </div>
+        </div>
+
+        <div class="slot-machine">
+            <div class="reels" id="reels">
+            </div>
+        </div>
+
+        <div class="result" id="resultMessage"></div>
+
+        <div class="controls">
+            <button id="spinBtn">Крутити!</button>
+            <button id="newGameBtn" style="display: none;">Нова гра</button>
+        </div>
+
+        <div class="history">
+            <h3>Історія спроб</h3>
+            <div id="historyList"></div>
+        </div>
+    </div>
+
+    <script>
+        let userName = '';
+let userScore = 0;
+let currentAttempt = 1;
+const maxAttempts = 3;
+let gameActive = false;
+
+const symbols = ['🍒', '🍋', '🍊', '🍇', '🍉', '⭐', '🔔', '💎'];
+const reelsCount = 3;
+const symbolsPerReel = 3;
+
+function getUserName() {
+    userName = prompt('Введіть ваше імʼя:');
+    if (userName === null || userName.trim() === '') {
+        showCancelMessage();
+        return false;
+    }
+    userName = userName.trim();
+    document.getElementById('userName').textContent = userName;
+    return true;
+}
+
+function showCancelMessage() {
+    document.body.innerHTML = `
+        <div style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        ">
+            <h1 style="font-size: 2.5em; margin-bottom: 20px; color: white;">🎰 Гра скасована 🎰</h1>
+            <p style="font-size: 1.3em; margin-bottom: 30px;">Будь ласка, введіть ім'я для початку гри</p>
+            <button onclick="location.reload()" style="
+                background: linear-gradient(135deg, #3498db, #2980b9);
+                color: white;
+                border: none;
+                padding: 15px 40px;
+                font-size: 1.2em;
+                border-radius: 25px;
+                cursor: pointer;
+                font-weight: bold;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            ">Спробувати знову</button>
+        </div>
+    `;
+}
+
+function generateReels() {
+    const reelsContainer = document.getElementById('reels');
+    reelsContainer.innerHTML = '';
+    
+    const reels = [];
+    
+    for (let i = 0; i < reelsCount; i++) {
+        const reel = document.createElement('div');
+        reel.className = 'reel';
+        
+        const availableSymbols = [...symbols];
+        const reelSymbols = [];
+        
+        for (let j = 0; j < symbolsPerReel; j++) {
+            const randomIndex = Math.floor(Math.random() * availableSymbols.length);
+            const symbol = availableSymbols.splice(randomIndex, 1)[0];
+            reelSymbols.push(symbol);
+            
+            const symbolElement = document.createElement('div');
+            symbolElement.className = 'symbol';
+            symbolElement.textContent = symbol;
+            symbolElement.dataset.reel = i;
+            symbolElement.dataset.position = j;
+            reel.appendChild(symbolElement);
+        }
+        
+        reels.push(reelSymbols);
+        reelsContainer.appendChild(reel);
+    }
+    
+    return reels;
+}
+
+function checkWin(reels) {
+    for (let row = 0; row < symbolsPerReel; row++) {
+        const firstSymbol = reels[0][row];
+        let isWin = true;
+        
+        for (let reel = 1; reel < reelsCount; reel++) {
+            if (reels[reel][row] !== firstSymbol) {
+                isWin = false;
+                break;
+            }
+        }
+        if (isWin) {
+            for (let reel = 0; reel < reelsCount; reel++) {
+                const symbolElement = document.querySelector(`.symbol[data-reel="${reel}"][data-position="${row}"]`);
+                symbolElement.classList.add('win');
+            }
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+function spinReels() {
+    const reels = generateReels();
+    const isWin = checkWin(reels);
+    
+    if (isWin) {
+        userScore++;
+        document.getElementById('userScore').textContent = userScore;
+        showResult('win', '🎉 Вітаємо! Ви виграли! 🎉');
+    } else {
+        showResult('lose', '😔 Спробуйте ще раз!');
+    }
+    
+    addToHistory(isWin);
+    currentAttempt++;
+    
+    if (currentAttempt > maxAttempts) {
+        finishGame();
+    } else {
+        updateAttemptInfo();
+    }
+}
+
+function showResult(type, message) {
+    const resultElement = document.getElementById('resultMessage');
+    resultElement.textContent = message;
+    resultElement.className = `result ${type} fade-in`;
+}
+
+function addToHistory(isWin) {
+    const historyList = document.getElementById('historyList');
+    const historyItem = document.createElement('div');
+    historyItem.className = `history-item fade-in ${isWin ? 'win' : 'lose'}`;
+    
+    const resultText = isWin ? 'Перемога' : 'Поразка';
+    historyItem.innerHTML = `
+        <strong>Спроба ${currentAttempt}:</strong> ${resultText}
+    `;
+    
+    historyList.appendChild(historyItem);
+    historyList.scrollTop = historyList.scrollHeight;
+}
+
+function updateAttemptInfo() {
+    document.getElementById('currentAttempt').textContent = currentAttempt;
+}
+
+function finishGame() {
+    document.getElementById('spinBtn').disabled = true;
+    document.getElementById('newGameBtn').style.display = 'inline-block';
+    
+    let finalMessage = '';
+    if (userScore > 0) {
+        finalMessage = `🎊 ${userName}, ви виграли ${userScore} раз(и) з ${maxAttempts} спроб! 🎊`;
+    } else {
+        finalMessage = `😔 ${userName}, нажаль ви не виграли жодного разу. Спробуйте ще!`;
+    }
+    
+    const winnerMessage = document.createElement('div');
+    winnerMessage.className = 'winner-message fade-in';
+    winnerMessage.textContent = finalMessage;
+    document.querySelector('.result').after(winnerMessage);
+}
+
+function resetGame() {
+    userScore = 0;
+    currentAttempt = 1;
+    document.getElementById('userScore').textContent = userScore;
+    document.getElementById('historyList').innerHTML = '';
+    document.getElementById('spinBtn').disabled = false;
+    document.getElementById('newGameBtn').style.display = 'none';
+    document.querySelector('.winner-message')?.remove();
+    document.getElementById('resultMessage').textContent = '';
+    document.getElementById('resultMessage').className = 'result';
+    updateAttemptInfo();
+    generateReels();
+}
+
+document.getElementById('spinBtn').addEventListener('click', function() {
+    if (currentAttempt <= maxAttempts) {
+        this.disabled = true;
+        setTimeout(() => {
+            spinReels();
+            this.disabled = false;
+        }, 100);
+    }
+});
+document.getElementById('newGameBtn').addEventListener('click', resetGame);
+
+window.addEventListener('load', function() {
+    if (getUserName()) {
+        gameActive = true;
+        generateReels();
+        updateAttemptInfo();
+    }
+});
+    </script>
+</body>
+</html>
